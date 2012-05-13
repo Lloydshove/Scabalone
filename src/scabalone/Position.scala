@@ -1,5 +1,5 @@
 package scabalone
 
-class Test {
+class Position {
 
 }
