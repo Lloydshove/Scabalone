@@ -1,5 +1,7 @@
 package scabalone
 
+// As Seen here : http://aperiodic.net/phil/scala/s-99/
+
 object NinetyNineQuestions{
   def removeAt(i: Int, chars: List[Char]){
     Nil
