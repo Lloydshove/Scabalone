@@ -41,18 +41,28 @@ object NinetyNineQuestions{
   }
 
 
-  def decode(tuples: List[(Int, Char)]) : List[Char] = {
-    Nil
+  def decode(tuples: List[(Int, Char)]) : List[Char] = tuples match {
+    case Nil => Nil
+    case first :: rest if first._1 == 0 => decode(rest)
+    case first :: rest => first._2 :: decode( (first._1 - 1, first._2) :: rest)
   }
 
 
   def encodeModified(chars: List[Char]) : List[Any] = {
-    Nil
+    encode(chars) map (
+      value => if ( value._1 == 1 ) {
+        value._2
+      }
+      else{
+        value
+      }
+    )
   }
 
 
-  def encode(chars: List[Char]) : List[(Int, Char)] = {
-    Nil
+  def encode(chars: List[Char]) : List[(Int, Char)] = chars match{
+    case Nil => Nil
+    case first :: rest => (chars.takeWhile({_ == first}).length, first) :: encode(chars.dropWhile({_ == first}))
   }
 
 
