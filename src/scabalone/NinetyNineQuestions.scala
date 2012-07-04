@@ -12,33 +12,57 @@ object NinetyNineQuestions{
   }
 
 
-  def slice(i: Int, i1: Int, chars: List[Char]){
-    Nil
+  def slice(i: Int, i1: Int, chars: List[Char]) : List[Char] = {
+    chars slice(i, i1)
   }
 
-  def split(i: Int, chars: List[Char]){
-    Nil
+  def sliceRecursive(i: Int, i1: Int, chars: List[Char]) : List[Char] = (i, i1, chars) match {
+    case (_, _, Nil) => Nil
+    case (0, 0, rest) => Nil
+    case (0, num, h :: t) => h :: sliceRecursive(0, num -1, t)
+    case (num1, num2, h :: t) => sliceRecursive(num1 -1, num2 -1, t)
+  }
+
+  def split(i: Int, chars: List[Char]) : (List[Char], List[Char]) = {
+    return chars splitAt i
+  }
+
+  def splitRecursive(i: Int, chars: List[Char]) : (List[Char], List[Char]) = (i, chars) match {
+      case (_, Nil) => (Nil, Nil)
+      case (0, stuff) => (Nil, stuff)
+      case (n, h :: tail) => {
+        val (pre, post) = splitRecursive(n - 1, tail)  //save the result
+        (h :: pre, post) //prepend/insert once you get it back
+      }
+  }
+
+  def drop(i: Int, chars: List[Char]) : List[Char] = {
+    def dropRecurs(c: Int, rChars: List[Char]): List[Char] = (c, rChars) match {
+      case (_, Nil) => Nil
+      case (1, head :: tail) => dropRecurs(i, tail)
+      case (index, head :: tail) => head :: dropRecurs(index -1, tail)
+    }
+    dropRecurs(i, chars)
   }
 
 
-  def drop(i: Int, chars: List[Char]){
-    Nil
+  def duplicateN(i: Int, chars: List[Char]) : List[Char] = chars flatMap { List.fill(i)(_) }
+    // chars flatMap { List.make(n, _) }
+
+
+
+  def duplicate(chars: List[Char]): List[Char] = chars match {
+    case Nil => Nil
+    case first :: rest => first :: first :: duplicate(rest)
   }
 
 
-  def duplicateN(i: Int, chars: List[Char]){
-    Nil
-  }
-
-
-  def duplicate(chars: List[Char]){
-    Nil
-  }
-
-
-  def encodeDirect(chars: List[Char]) : List[(Int, Char)] = {
-    Nil
-  }
+  def encodeDirect[A](ls: List[A]): List[(Int, A)] =
+    if (ls.isEmpty) Nil
+    else {
+      val (packed, next) = ls span { _ == ls.head }
+      (packed.length, packed.head) :: encodeDirect(next)
+    }
 
 
   def decode(tuples: List[(Int, Char)]) : List[Char] = tuples match {
@@ -47,6 +71,11 @@ object NinetyNineQuestions{
     case first :: rest => first._2 :: decode( (first._1 - 1, first._2) :: rest)
   }
 
+  def decodeSober(tuples: List[(Int, Char)]) : List[Char] = {
+   // tuples flatMap ( {t => List.fill(t._1, t._2)}
+
+      tuples flatMap { e => List.fill(e._1)(List(e._2)).flatten }
+  }
 
   def encodeModified(chars: List[Char]) : List[Any] = {
     encode(chars) map (
@@ -60,6 +89,12 @@ object NinetyNineQuestions{
   }
 
 
+  def encodeMod2(chars: List[Char]) : List[Any] = chars match{
+    case Nil => Nil
+    case first :: rest if chars.takeWhile({_ == first}).length == 1 => first :: encodeMod2(rest)
+    case first :: rest => (chars.takeWhile({_ == first}).length, first) :: encodeMod2(chars.dropWhile({_ == first}))
+  }
+
   def encode(chars: List[Char]) : List[(Int, Char)] = chars match{
     case Nil => Nil
     case first :: rest => (chars.takeWhile({_ == first}).length, first) :: encode(chars.dropWhile({_ == first}))
@@ -70,7 +105,7 @@ object NinetyNineQuestions{
     case Nil => Nil
     case first :: tail => {
                             def sameAsFirst(value : Char) : Boolean = {value == first}
-                            chars.takeWhile( sameAsFirst _ ) :: pack(chars.dropWhile(sameAsFirst _ ))
+                            chars.takeWhile( sameAsFirst _ ) :: pack(chars.dropWhile( sameAsFirst _ ))
                           }
   }
 
